@@ -11,6 +11,10 @@ Amaç, müşterileri satın alma sıklığı, son alışveriş zamanı ve harcam
 - **Temel alanlar:** `master_id`, alışveriş kanalları, ilk/son alışveriş tarihleri, online/offline sipariş adetleri ve harcamaları, ilgi duyulan ürün kategorileri
 - **Toplam geçmiş harcama:** 14.983.567,31 TL (veri setindeki müşteri harcamalarının toplamı)
 
+## Veri seti erişimi
+
+> **Önemli:** Ham FLO veri setinin yeniden dağıtımına izin verilmediğinden `flo_data_20k.csv` bu GitHub deposunda paylaşılmamaktadır. Analizi çalıştırmak için veri setine yetkili erişiminiz olmalı ve dosyayı `data/raw/flo_data_20k.csv` konumuna yerleştirmelisiniz. Müşteri bazlı analiz ve kampanya CSV çıktıları da depoya dahil edilmez.
+
 ## Yöntem ve uygulama
 
 1. **Veri hazırlama (`src/data_prep.py`):** Tarih sütunları `datetime` tipine dönüştürülür; online/offline sipariş ve harcamalar birleştirilerek toplam metrikler hesaplanır. Dijital kanal eğilimini göstermek için `online_order_ratio` ve `online_value_ratio` türetilir.
@@ -20,6 +24,22 @@ Amaç, müşterileri satın alma sıklığı, son alışveriş zamanı ve harcam
 5. **Karar destek paneli (`app.py`):** Müşteri sayısı, toplam ciro, müşteri başına ortalama sipariş ve en kalabalık segment KPI'ları; segment/kategori/harcama filtreleri; grafikler ve müşteri ID'lerini CSV indirme işlevi sunulur.
 
 > **Kanal grafikleri hakkında:** `order_channel` bazındaki toplamlar, ilgili gruptaki müşterilerin **online + offline tüm geçmiş işlemlerini** içerir; tek tek kanallarda gerçekleşen satış tutarı olarak yorumlanmamalıdır.
+
+## Görselleştirmeler
+
+### RFM segment dağılımı
+
+![RFM segment treemap](reports/figures/rfm_treemap.png)
+
+### Segment bazlı RFM profili
+
+![Segment RFM heatmap](reports/figures/segment_heatmap.png)
+
+### Sipariş kanalı gruplarına göre toplam işlem hacmi
+
+![Sipariş kanalı grupları](reports/figures/channel_distribution.png)
+
+> Grafikler toplulaştırılmış analiz çıktılarıdır. Kanal grubu grafiği, her gruptaki müşterilerin toplam online ve offline işlemlerini birlikte kapsar.
 
 ## Analiz sonuçları
 
@@ -42,11 +62,10 @@ Hedef kitlelerin `master_id` listeleri `data/processed/` altında CSV olarak kay
 ```text
 flo-omnichannel-customer-segmentation/
 ├── data/
-│   ├── raw/flo_data_20k.csv
-│   └── processed/               # RFM, kampanya ve segment özet CSV'leri
+│   ├── raw/                    # Yerel veri seti (GitHub'da yok)
+│   └── processed/              # Yerel müşteri bazlı çıktılar (GitHub'da yok)
 ├── reports/figures/            # Treemap, heatmap, kanal grafikleri
 ├── src/
-│   ├── __init__.py
 │   ├── data_prep.py
 │   ├── rfm_engine.py
 │   ├── business_actions.py
@@ -57,7 +76,9 @@ flo-omnichannel-customer-segmentation/
 ├── app.py                      # Streamlit paneli
 ├── main.py                     # Analiz hattı
 ├── pytest.ini
-└── requirements.txt
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ## Kurulum ve çalıştırma
@@ -84,7 +105,7 @@ streamlit run app.py      # İnteraktif panel
 
 **Teknolojiler:** Python, pandas, NumPy, Matplotlib, Seaborn, Squarify, Streamlit, pytest.
 
-Pytest testleri; tarih dönüşümleri, toplam sipariş/harcama ve online sipariş oranları, RFM skor aralıkları, RF skoru biçimi ve örnek veri üzerinde segmentasyon çıktısını kontrol eder. Paylaşılan testler uygun paket dizininde çalıştırıldığında **5 test başarılı** sonuçlanmıştır.
+Pytest testleri; tarih dönüşümleri, toplam sipariş/harcama ve online sipariş oranları, RFM skor aralıkları, RF skoru biçimi ve örnek veri üzerinde segmentasyon çıktısını kontrol eder. Testler, gerçek FLO veri seti yerine örnek veri kullanılarak çalıştırılabilir. Test sonuçlarını doğrulamak için `python -m pytest` komutunu çalıştırın.
 
 ## Kaynak ve geliştirmeler
 
